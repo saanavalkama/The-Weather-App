@@ -1,59 +1,64 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Switch from "./Switch";
+import { useWeather } from "../hooks/useWeather";
+import { v4 as uuidv4 } from "uuid"
 
-export default function Weather({city}){
 
-  const weatherApiKey = import.meta.env.VITE_APP_API_KEY_WEATHER;
+export default function Weather({city, setFavorites}){
 
-  const [weather, setWeather] = useState(null)
   const [metric, setMetric] = useState(true)
-
   
-  useEffect(()=>{
+  const {weather, isLoading} = useWeather(city)
+  
 
-    async function getWeather(){
-      try{
-        const url = `http://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${city}&days=3&aqi=no&alerts=no`
-        const res = await fetch(url)
-        if(!res.ok){
-          throw new Error('something went wrong while fetching data')
-        }
-        
-        const data = await res.json()
-        setWeather(data)
-
-      } catch(err){
-        console.log(err)
-      }
+  function handleAddFavorite(){
+    const cityObject = {
+      city: weather?.location?.name, 
+      id: uuidv4(),
+      lat: weather?.location?.lat,
+      lon: weather?.location?.lon
     }
-    city && getWeather()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[city])
-
-  if(!weather){
-    return <p>weather for {city}</p>;
+    setFavorites((prev)=>{
+      const exists = prev.some(fav => fav.city.toLowerCase() === city.toLowerCase())
+      if (exists) return prev
+      return [...prev, cityObject]
+    })
   }
 
 
   return(
-    <div className='weather'>
-      <h3>{weather?.location?.name}</h3>
-      <CurrentForeCast 
-        current={weather?.current}
-        metric={metric} />
-      <ThreeDayForecast 
-        forecastList={weather?.forecast?.forecastday}
-        metric={metric}
-      />
-      <Switch 
-        text="metric" 
-        checked={metric}
-        onChange={()=>setMetric((prev)=>!prev)} 
-        className="slider" 
-      />
+    <div>
+      {isLoading && <p className="loading">loading</p>}
+      {!isLoading  && (
+        <div className='weather'>
+          <div className="weather-header-row">
+            <h3>{weather?.location?.name}</h3>
+            <button 
+              className="fav-button"
+              onClick={handleAddFavorite}
+            >
+              Add to favorites ⭐
+            </button>
+          </div>
+         <CurrentForeCast 
+          current={weather?.current}
+          metric={metric} />
+        <ThreeDayForecast 
+          forecastList={weather?.forecast?.forecastday}
+          metric={metric}
+        />
+        <Switch 
+          text="metric" 
+          checked={metric}
+          onChange={()=>setMetric((prev)=>!prev)} 
+          className="slider" 
+        />
+      </div>)}
     </div>
   )
 }
+
+
 
 function CurrentForeCast({current, metric}){
 
@@ -92,9 +97,9 @@ function ThreeDayForecast({forecastList, metric}){
     <div className="forecast">
       <h3>Three day forecast</h3>
       <div className="three-day-forecast">
-        <Forecast item={forecastList[0]} metric={metric} />
-        <Forecast item={forecastList[1]} metric={metric}/>
-        <Forecast item={forecastList[2]} metric={metric}/>
+        <Forecast item={forecastList?.[0]} metric={metric} />
+        <Forecast item={forecastList?.[1]} metric={metric} />
+        <Forecast item={forecastList?.[2]} metric={metric} />
       </div>
     </div> 
   )

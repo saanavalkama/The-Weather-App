@@ -19,3 +19,11 @@ export function Header(){
 export function Container({children}){
     return(<div className="container">{children}</div>)
 }
+
+export function FirstRow({children}){
+  return(<div className="first-row-container">{children}</div>)
+}
+
+export function SecondRow({children}){
+  return(<div className="second-row-container">{children}</div>)
+}

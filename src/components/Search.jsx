@@ -10,6 +10,8 @@ export default function Search({ handleGeoLocation }){
 
   useEffect(()=>{
 
+    if(!query) return
+
     const controller = new AbortController()
 
     async function getLocations(){
@@ -20,17 +22,17 @@ export default function Search({ handleGeoLocation }){
         }
         
         const data = await res.json()
-        console.log(data)
         setAutoComplete(data.features)
       } catch(err){
         console.log(err)
       }
     }
-    query && getLocations()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    getLocations()
+  
     return function(){
         controller.abort()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[query])
 
   return(
