@@ -1,39 +1,15 @@
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
+import { useAutoComplete } from '../hooks/useAutoComplete'
 
 
 export default function Search({ setLocationObject,setShowFavorite, setCurrentLocation}){
 
   const [query, setQuery] = useState('')
-  const [autoComplete, setAutoComplete] = useState([])
 
-  const locationApiKey = import.meta.env.VITE_APP_API_KEY_LOCATION
+  const {autocomplete, loading} = useAutoComplete(query)
 
-  useEffect(()=>{
+  console.log(autocomplete)
 
-    if(!query) return
-
-    const controller = new AbortController()
-
-    async function getLocations(){
-      try{
-        const res = await fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${query}&apiKey=${locationApiKey}`,{signal : controller.signal})
-        if(!res.ok){
-          throw new Error('Something went worong while fetching')
-        }
-        
-        const data = await res.json()
-        setAutoComplete(data.features)
-      } catch(err){
-        console.log(err)
-      }
-    }
-    getLocations()
-  
-    return function(){
-        controller.abort()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[query])
 
   return(
     <div className='search'>
@@ -41,12 +17,13 @@ export default function Search({ setLocationObject,setShowFavorite, setCurrentLo
         value={query}
         onChange={(e)=>setQuery(e.target.value)}
       />
-      <CityList 
-        features={autoComplete} 
+      {loading && <p>loading</p>}
+      {autocomplete && !loading && <CityList 
+        features={autocomplete} 
         setLocationObject={setLocationObject} 
         setShowFavorite={setShowFavorite}
         setCurrentLocation={setCurrentLocation}
-        />
+        />}
     </div>
     
   )

@@ -68,6 +68,7 @@ export default function App(){
           <WeatherMap 
             geoLocation={[locationObject?.lat, locationObject?.lon]}
             setLocationObject={setLocationObject}
+            locationObj={locationObject}
             />
           {showFavorite && 
             <Favourites 

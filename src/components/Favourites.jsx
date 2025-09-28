@@ -18,7 +18,7 @@ export default function Favourites({favorites, onDeleteFavorite, setLocationObje
 }
 
 function CityItem({city, onDeleteFavorite, setLocationObject, setShowFavorite}){
-  console.log(city)
+
   return(
     <li className="fav-li-item">
       <p>{city.city}</p>

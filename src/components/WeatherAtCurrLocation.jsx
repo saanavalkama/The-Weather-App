@@ -4,11 +4,11 @@ import WeatherScreen from "./WeatherScreen"
 
 export default function WeatherAtCurrLocation({setLocationObject,locationObj,metric, onAddFavorites}){
 
-  const [error, setError] = useState(null)
+  const [componentError, setComponentError] = useState(null)
 
   useEffect(()=>{
     if(!navigator.geolocation){
-      setError("browser cannot access location")
+      setComponentError("Browser does not support geolocation")
     }
     navigator.geolocation.getCurrentPosition((position)=>{
       setLocationObject({
@@ -17,12 +17,12 @@ export default function WeatherAtCurrLocation({setLocationObject,locationObj,met
         city:null
       })
     },(err)=>{
-      setError(err)
+      setComponentError(err)
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
-  const {weather, isLoading} = useWeather(locationObj.lat, locationObj.lon)
+  const {weather, isLoading, error} = useWeather(locationObj.lat, locationObj.lon)
 
   useEffect(()=>{
     if(weather?.location?.name){
@@ -38,7 +38,8 @@ export default function WeatherAtCurrLocation({setLocationObject,locationObj,met
 
   return(
     <div>
-      {error && <p>Something went wrong</p>}
+      {error && <p>{error}</p>}
+      {componentError && <p>{componentError}</p>}
       {isLoading && <p>Loading...</p>}
       {!error && !isLoading && (
         <div className="weather-at-location">

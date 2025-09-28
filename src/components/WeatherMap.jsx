@@ -1,5 +1,6 @@
 import { useEffect} from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
+import { getCityFromCoords } from "../services/getCityFromCoords";
 
 
 function RecenterMap({ center }) {
@@ -10,7 +11,7 @@ function RecenterMap({ center }) {
   return null;
 }
 
-export default function WeatherMap({geoLocation, setLocationObject}){
+export default function WeatherMap({geoLocation, setLocationObject,locationObject }){
 
   return(
     <div className="weather-map-box">
@@ -19,7 +20,7 @@ export default function WeatherMap({geoLocation, setLocationObject}){
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
-      <LocationMarker setLocationObject={setLocationObject} />
+      <LocationMarker setLocationObject={setLocationObject} locationObject={locationObject}/>
       <RecenterMap center={geoLocation} />
       <Marker position={geoLocation}>
       <Popup>
@@ -32,14 +33,21 @@ export default function WeatherMap({geoLocation, setLocationObject}){
 }
 
 function LocationMarker({setLocationObject}) {
+
+
   
   useMapEvents({
-    click(e){
+    async click(e){
       const {lat,lng} = e.latlng;
+
+      const city =  await getCityFromCoords(lat,lng)
+      const newCity = city?.features?.[0].properties?.city
+
+
       setLocationObject({
         lat,
         lon: lng,
-        city: null
+        city: newCity
       })
     }
   })

@@ -4,25 +4,31 @@ import Switch from './Switch'
 
 export default function WeatherAtLocation({locationObj, metric, onAddFavorites, itemInFavourites}){
 
-  const {weather, isLoading} = useWeather(locationObj.lat,locationObj.lon)
+  const {weather, isLoading, error} = useWeather(locationObj.lat,locationObj.lon)
 
   const existInFavorites = itemInFavourites(locationObj.city)
 
   return(
     <div className='weather-at-location'>
-      <Location location={weather?.location} />
-      {existInFavorites ? <p className='fav-info'>City is in favorites</p> :
-      <button 
-        onClick={()=>onAddFavorites(locationObj)}
-        className='add-fav-btn'
-      >Add to favorites
-      </button>}
-      <WeatherScreen 
-        curr={weather?.current} 
-        forecast={weather?.forecast?.forecastday} 
-        isLoading={isLoading}
-        metric={metric} 
-      />
+      {error && <p>error</p>}
+      {isLoading && <p>loading...</p>}
+      {!error && !isLoading && 
+        <>
+          <Location location={weather?.location} />
+          {existInFavorites ? <p className='fav-info'>City is in favorites</p> :
+            <button 
+              onClick={()=>onAddFavorites(locationObj)}
+              className='add-fav-btn'
+            >Add to favorites
+            </button>}
+         <WeatherScreen 
+          curr={weather?.current} 
+          forecast={weather?.forecast?.forecastday} 
+          isLoading={isLoading}
+          metric={metric} 
+        />
+      </>
+      }
     </div>)
 }
 
