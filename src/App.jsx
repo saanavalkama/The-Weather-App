@@ -65,7 +65,10 @@ export default function App(){
       <Header handleShowFavorite={handleShowFavorite} />
       <AppContainer>
         <FirstRow>
-          <WeatherMap geoLocation={[locationObject?.lat, locationObject?.lon]}/>
+          <WeatherMap 
+            geoLocation={[locationObject?.lat, locationObject?.lon]}
+            setLocationObject={setLocationObject}
+            />
           {showFavorite && 
             <Favourites 
               favorites={favorites}

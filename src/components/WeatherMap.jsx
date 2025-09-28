@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import { useEffect} from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
 
 
 function RecenterMap({ center }) {
@@ -10,7 +10,7 @@ function RecenterMap({ center }) {
   return null;
 }
 
-export default function WeatherMap({geoLocation}){
+export default function WeatherMap({geoLocation, setLocationObject}){
 
   return(
     <div className="weather-map-box">
@@ -19,6 +19,7 @@ export default function WeatherMap({geoLocation}){
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
+      <LocationMarker setLocationObject={setLocationObject} />
       <RecenterMap center={geoLocation} />
       <Marker position={geoLocation}>
       <Popup>
@@ -28,4 +29,20 @@ export default function WeatherMap({geoLocation}){
     </MapContainer>
     </div>
   )
+}
+
+function LocationMarker({setLocationObject}) {
+  
+  useMapEvents({
+    click(e){
+      const {lat,lng} = e.latlng;
+      setLocationObject({
+        lat,
+        lon: lng,
+        city: null
+      })
+    }
+  })
+
+  return null
 }
