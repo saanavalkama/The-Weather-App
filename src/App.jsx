@@ -1,18 +1,27 @@
+//hook and other functions
 import {useState, useEffect} from 'react'
+import {v4 as uuidv4} from 'uuid'
 
 //components
 import WeatherMap from './components/WeatherMap';
-import Weather from './components/Weather';
 import Search from './components/Search';
-import { Header, Box, AppContainer, Container, SecondRow, FirstRow } from './components/Layout';
+import { Box, AppContainer, Container, SecondRow, FirstRow } from './components/Layout';
 import Favourites from './components/Favourites';
-import  WeatherAtCurrLocation  from './components/WeatherAtCurrLocation';
+import WeatherAtLocation from './components/WeatherAtLocation.jsx';
+import Header from './components/Header';
+import Weather from './components/Weather.jsx';
 
 export default function App(){
 
-  const [geoLocation, setGeoLocation] = useState([51.505, -0.09])
-  const [city, setCity] = useState('')
+  const [locationObject, setLocationObject] = useState({
+    lat: 51.505,
+    lon: -0.09,
+    city: 'London'
+  })
+
   const [favorites, setFavorites] = useState(favoritesInitializationCallback)
+  const [showFavorite, setShowFavorite] = useState(false)
+  const [currentLocation, setCurrentLocation] = useState(false)
 
   function favoritesInitializationCallback(){
     try{
@@ -24,16 +33,27 @@ export default function App(){
     }
   }
 
-  function handleGeoLocation(lat,long,city){
-    setGeoLocation([lat,long])
-    setCity(city)
+  function addToFavorites(obj){
+    const exists = favorites.some(fav => fav.city === obj.city)
+    if(!exists){
+      const objToAdd = {...obj, id: uuidv4()}
+      setFavorites((prev)=>[...prev,objToAdd])
+    }
+    setShowFavorite(true)
   }
-
 
   function deleteFavorite(id){
     setFavorites((prev)=>
       prev.filter((fav)=> fav.id !== id)
     )
+  }
+
+  function itemInFavourites(city){
+    return favorites.some(fav => fav.city === city)
+  }
+
+  function handleShowFavorite(){
+    setShowFavorite((prev)=>!prev)
   }
 
   useEffect(()=>{
@@ -42,25 +62,34 @@ export default function App(){
 
   return(
     <Container >
-      <Header />
+      <Header handleShowFavorite={handleShowFavorite} />
       <AppContainer>
         <FirstRow>
-          <Box>
-            <WeatherMap geoLocation={geoLocation}/>
-          </Box>
-          <Box>
-            {city && <Weather city={city} setFavorites={setFavorites}/>}
-          </Box>
+          <WeatherMap geoLocation={[locationObject?.lat, locationObject?.lon]}/>
+          {showFavorite && 
+            <Favourites 
+              favorites={favorites}
+              onDeleteFavorite={deleteFavorite}
+              setLocationObject={setLocationObject}
+              setShowFavorite={setShowFavorite}
+            />}
+          {!showFavorite && 
+            <Weather 
+              locationObj={locationObject}
+              onAddFavorites={addToFavorites}
+              itemInFavourites={itemInFavourites} 
+              setLocationObject={setLocationObject}
+              currentLocation={currentLocation}
+              setCurrentLocation={setCurrentLocation}
+            />}
         </FirstRow>
         <SecondRow>
-          <Search handleGeoLocation={handleGeoLocation}/>
-          <WeatherAtCurrLocation />
+          <Search 
+            setLocationObject={setLocationObject}
+            setShowFavorite={setShowFavorite}
+            setCurrentLocation={setCurrentLocation}
+            />
         </SecondRow>
-        <Favourites 
-          favorites={favorites} 
-          onDeleteFavorite={deleteFavorite} 
-          handleGeoLocation={handleGeoLocation}
-        />
       </AppContainer>
     </Container>
   )

@@ -11,8 +11,9 @@ function RecenterMap({ center }) {
 }
 
 export default function WeatherMap({geoLocation}){
+
   return(
-    <div>
+    <div className="weather-map-box">
     <MapContainer center={[51.505, -0.09]} zoom={4} scrollWheelZoom={false}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

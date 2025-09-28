@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 
-export function useWeather(city){
+export function useWeather(lat,lon){
 
   const weatherApiKey = import.meta.env.VITE_APP_API_KEY_WEATHER;
   const [weather, setWeather] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(()=>{
-    if(!city) return
+    if(!lat || !lon) return
 
     async function getWeather(){
 
       setIsLoading(true)
 
       try{
-        const url = `http://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${city}&days=3&aqi=no&alerts=no`
+        const url = `https://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${lat},${lon}&days=3&aqi=no&alerts=no`;
         const res = await fetch(url)
         if(!res.ok){
           throw new Error("Failed to fetch")
@@ -30,7 +30,7 @@ export function useWeather(city){
     }
     getWeather()
 
-  },[city])
+  },[lat,lon])
 
   return {weather, isLoading }
 
