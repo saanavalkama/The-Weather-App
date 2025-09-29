@@ -9,7 +9,9 @@ import { Box, AppContainer, Container, SecondRow, FirstRow } from './components/
 import Favourites from './components/Favourites';
 import WeatherAtLocation from './components/WeatherAtLocation.jsx';
 import Header from './components/Header';
+import Footer from './components/Footer.jsx'
 import Weather from './components/Weather.jsx';
+
 
 export default function App(){
 
@@ -87,14 +89,13 @@ export default function App(){
               setCurrentLocation={setCurrentLocation}
             />}
         </FirstRow>
-        <SecondRow>
-          <Search 
-            setLocationObject={setLocationObject}
-            setShowFavorite={setShowFavorite}
-            setCurrentLocation={setCurrentLocation}
-            />
-        </SecondRow>
+        <Search 
+          setLocationObject={setLocationObject}
+          setShowFavorite={setShowFavorite}
+          setCurrentLocation={setCurrentLocation}
+        />
       </AppContainer>
+      <Footer />
     </Container>
   )
 }

@@ -17,7 +17,7 @@ export default function Search({ setLocationObject,setShowFavorite, setCurrentLo
         value={query}
         onChange={(e)=>setQuery(e.target.value)}
       />
-      {loading && <p>loading</p>}
+      {loading && <div className='spinner'></div>}
       {autocomplete && !loading && <CityList 
         features={autocomplete} 
         setLocationObject={setLocationObject} 

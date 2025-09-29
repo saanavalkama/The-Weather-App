@@ -1,7 +1,6 @@
 import {useWeather} from '../hooks/useWeather'
 import WeatherScreen from './WeatherScreen'
 import Switch from './Switch'
-
 export default function WeatherAtLocation({locationObj, metric, onAddFavorites, itemInFavourites}){
 
   const {weather, isLoading, error} = useWeather(locationObj.lat,locationObj.lon)
@@ -11,7 +10,7 @@ export default function WeatherAtLocation({locationObj, metric, onAddFavorites, 
   return(
     <div className='weather-at-location'>
       {error && <p>error</p>}
-      {isLoading && <p>loading...</p>}
+      {isLoading && <Skeleton />}
       {!error && !isLoading && 
         <>
           <Location location={weather?.location} />
@@ -42,4 +41,27 @@ function Location(location){
     </div>
   </div>)
 
+}
+
+function Skeleton(){
+  return(<div className='skeleton'>
+    <div className='skeleton-location'>
+      <div className='skeleton-header'></div>
+      <div className='skeleton-coord'>
+        <div className='skeleton-coords'></div>
+        <div className='skeleton-coords'></div>
+      </div>
+    </div>
+    <div className='skeleton-curr-weather'>
+      <div className='skeleton-curr'></div>
+      <div className='skeleton-curr'></div>
+      <div className='skeleton-curr'></div>
+      <div className='skeleton-curr'></div>
+    </div>
+    <div className='skeleton-forecast'>
+      <div className='skeleton-forecast-item'></div>
+      <div className='skeleton-forecast-item'></div>
+      <div className='skeleton-forecast-item'></div>
+    </div>
+  </div>)
 }
